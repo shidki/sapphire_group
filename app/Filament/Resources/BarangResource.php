@@ -5,17 +5,22 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BarangResource\Pages;
 use App\Filament\Resources\BarangResource\RelationManagers;
 use App\Models\Barang;
+use Closure;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Unique;
 
 class BarangResource extends Resource
@@ -35,6 +40,8 @@ class BarangResource extends Resource
                 ->validationMessages([
                     "unique" => "Barang sudah tersedia"
                 ]),
+
+
                 TextInput::make("qty")
                 ->label("Jumlah")
                 ->required()
@@ -43,6 +50,7 @@ class BarangResource extends Resource
 
                 Select::make("pemilik_id")
                 ->label("Pemilik")
+                ->reactive()
                 ->required()
                 ->relationship("pemilik", "nama"),
 
@@ -52,13 +60,15 @@ class BarangResource extends Resource
                 ->relationship("qic", "nama"),
 
                 DatePicker::make("tanggal_pembelian")
+                ->reactive()
                 ->required(),
 
                 DatePicker::make("tanggal_pencatatan")
                 ->maxDate(now())
-                ->required()
+                ->required(),
             ]);
     }
+    
 
     public static function table(Table $table): Table
     {
